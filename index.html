@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>bytes</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Retro snake game made with HTML5 and TypeScript">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="bytes">
+    <meta property="og:description" content="Retro snake game made with HTML5 and TypeScript">
+    <meta property="og:site_name" content="bytes">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="bytes">
+    <meta name="twitter:description" content="Retro snake game made with HTML5 and TypeScript">
+
+    <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+
+    <header>
+        <button id="reset">reset</button>
+        <button id="pause">pause</button>
+        <button id="start">start</button>
+        <span id="player-one-score"></span>
+        <span id="player-one-lives"></span>
+        <span id="player-two-score"></span>        
+        <span id="player-two-lives"></span>
+        <br>
+        <div>            
+            <span>[ SPACEBAR ] - warp jump</span>
+            <span id="build">&copy;2015-2019 <a href="https://twitter.com/8_bit_hacker">@8_bit_hacker</a></span>
+        </div>
+    </header>
+
+    <canvas></canvas>
+
+    <script type="module" src="./build/game.js"></script>
+
+</body>
+</html>
