@@ -1,111 +1,109 @@
-import { ClockTick, Timer, Direction } from './types/index.js' 
-import { Coin, Snake, SlowPlayer, FastPlayer } from './objects/index.js'
-import { Board, Canvas, Console, Controls, GUI } from './ux/index.js'
+import { ClockTick, Timer, Direction } from './types/index.js';
+import { Coin, Snake, SlowPlayer, FastPlayer } from './objects/index.js';
+import { Board, Canvas, Console, Controls, GUI } from './ux/index.js';
 
-enum GameDifficulty { EASY = 300, MEDIUM = 150, DIFFICULT = 50 }
+enum GameDifficulty {
+    EASY = 300,
+    MEDIUM = 150,
+    DIFFICULT = 50
+}
 
 export class Game {
 
-    static clock: Timer
-    static player_one: Snake
-    static hi_score: number = 0
-    static is_running: boolean = false
+    static clock: Timer;
+    static player: Snake;
+    static hi_score: number = 0;
+    static is_running: boolean = false;
+    static coinCounter: number = 0; // TODO: move to item randomizer class
 
-    static init() {
-        
-        Canvas.init(<HTMLCanvasElement>document.querySelector("canvas"))
+    static init(): void {
+        const canvas = document.querySelector("canvas") as HTMLCanvasElement;
+        if (!canvas) throw new Error("Canvas element not found!");
 
-        let body: HTMLBodyElement = document.querySelector("body")
-        body.onkeyup = Controls.on_key_up              
-        
-        Game.ready()
-    }              
-    
-    static ready() {
-        
-        Console.init()
-        Board.init()
-        Board.draw()
-        GUI.init()
-        GUI.draw()
+        Canvas.init(canvas);
 
-        Game.player_one = new Snake({ x: 0, y: 0 })
-        Game.player_one.direction = Direction.RIGHT
-        Game.clock = new Timer(GameDifficulty.DIFFICULT, 0, Game.on_clock_tick)
+        const body = document.querySelector("body")!;
+        body.onkeydown = Controls.on_key_down;
+
+
+        Game.ready();
     }
 
-    static start() {
+    static ready(): void {
+        Console.init();
+        Board.init();
+        Board.draw();
 
-        if (Game.is_running) { return }
-        if (Game.clock.is_paused) { return Game.pause() }
-                    
-        Game.is_running = true           
-        Game.clock.start()
+        GUI.init();
+        GUI.draw();
+
+        Game.player = new Snake({ x: 0, y: 0 });
+        Game.player.direction = Direction.RIGHT;
+
+        Game.clock = new Timer(GameDifficulty.DIFFICULT, 0, Game.on_clock_tick);
     }
 
-    static pause() {
-
+    static start(): void {
+        if (Game.is_running) return;
         if (Game.clock.is_paused) {
-            Game.is_running = true
-            return Game.clock.resume()
+            return Game.pause();
         }
-        
-        Game.clock.pause()
-        Game.is_running = false
-        GUI.draw()
+
+        Game.is_running = true;
+        Game.clock.start();
     }
 
-    static reset() {
-        
-        Game.clock && Game.clock.stop()
-        Game.is_running = false         
-        Game.ready()            
+    static pause(): void {
+        if (Game.clock.is_paused) {
+            Game.is_running = true;
+            return Game.clock.resume();
+        }
+
+        Game.clock.pause();
+        Game.is_running = false;
+        GUI.draw();
     }
 
-    // TODO: Move this to item randomizer class
-    static coinCounter = 0
+    static reset(): void {
+        Game.clock?.stop();
+        Game.is_running = false;
+        Game.ready();
+    }
 
-    static on_clock_tick() {
-                                            
-        Controls.process_input()
-        Game.player_one.process_turn()   
-        
-        if (Game.clock.tick == ClockTick.EVEN) {
+    static on_clock_tick(): void {
+        Controls.process_input();
+        Game.player.process_turn();
 
-            // TODO: Move this to item randomizer class
-            Game.coinCounter += 1
+        if (Game.clock.tick === ClockTick.EVEN) {
+            Game.coinCounter++;
+
             if (Game.coinCounter >= 2) {
+                Game.coinCounter = 0;
 
-                Game.coinCounter = 0
+                if (Math.random() < 0.5) {
+                    const probability = (Coin.coins_active + 0.5) / 5;
 
-                if (!Math.floor(Math.random() + .5)) {
-
-                    var probability = (Coin.coins_active + .5) / 5
-                    if (!Math.floor(Math.random() + probability)) {
-
-                        if (!Math.floor(Math.random() + .8)) {
-                            var coin = Coin.create_random()
-                            Board.place_at_random(coin)
-                        }
-                        else {
-
-                            if (!Math.floor(Math.random() + .5)) {
-                                var slowPlayer = new SlowPlayer()
-                                Board.place_at_random(slowPlayer)
+                    if (Math.random() > probability) {
+                        if (Math.random() < 0.8) {
+                            const coin = Coin.create_random();
+                            Board.placeAtRandom(coin);
+                        } else {
+                            if (Math.random() < 0.5) {
+                                const slowPlayer = new SlowPlayer();
+                                Board.placeAtRandom(slowPlayer);
+                            } else {
+                                const fastPlayer = new FastPlayer();
+                                Board.placeAtRandom(fastPlayer);
                             }
-                            else {
-                                var fastPlayer = new FastPlayer()
-                                Board.place_at_random(fastPlayer)
-                            }                                
                         }
                     }
                 }
             }
-        }           
+        }
 
-        Board.draw()
-        GUI.draw()         
+        Board.draw();
+        GUI.draw();
     }
 }
 
-Game.init()
+Game.init();

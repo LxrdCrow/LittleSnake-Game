@@ -1,36 +1,60 @@
-import { Direction, GameKey } from '../types/index.js';
+import { Direction } from '../types/index.js';
 import { Game } from '../game.js';
 export class Controls {
     static process_input() {
-        if (!Controls.last_key) {
+        if (!Controls.last_key)
             return;
-        }
         switch (Controls.last_key) {
-            case GameKey.UP:
-                if (Game.player_one.direction != Direction.DOWN) {
-                    Game.player_one.direction = Direction.UP;
+            case "w":
+            case "arrowup":
+                if (Game.player.direction !== Direction.DOWN) {
+                    Game.player.direction = Direction.UP;
                 }
                 break;
-            case GameKey.DOWN:
-                if (Game.player_one.direction != Direction.UP) {
-                    Game.player_one.direction = Direction.DOWN;
+            case "s":
+            case "arrowdown":
+                if (Game.player.direction !== Direction.UP) {
+                    Game.player.direction = Direction.DOWN;
                 }
                 break;
-            case GameKey.LEFT:
-                if (Game.player_one.direction != Direction.RIGHT) {
-                    Game.player_one.direction = Direction.LEFT;
+            case "a":
+            case "arrowleft":
+                if (Game.player.direction !== Direction.RIGHT) {
+                    Game.player.direction = Direction.LEFT;
                 }
                 break;
-            case GameKey.RIGHT:
-                if (Game.player_one.direction != Direction.LEFT) {
-                    Game.player_one.direction = Direction.RIGHT;
+            case "d":
+            case "arrowright":
+                if (Game.player.direction !== Direction.LEFT) {
+                    Game.player.direction = Direction.RIGHT;
                 }
                 break;
-            case GameKey.SPACEBAR:
-                Game.player_one.jump();
+            case " ":
+                Game.player.jump();
+                break;
         }
         Controls.last_key = null;
     }
 }
 Controls.last_key = null;
-Controls.on_key_up = (ev) => { Controls.last_key = ev.keyCode; };
+Controls.on_key_down = (ev) => {
+    // Ignora input se l'utente sta scrivendo in input/textarea
+    if (ev.target.tagName === 'INPUT' || ev.target.tagName === 'TEXTAREA') {
+        return;
+    }
+    // Blocca comportamento predefinito per tasti di gioco
+    switch (ev.key.toLowerCase()) {
+        case "w":
+        case "arrowup":
+        case "s":
+        case "arrowdown":
+        case "a":
+        case "arrowleft":
+        case "d":
+        case "arrowright":
+        case " ":
+            ev.preventDefault();
+            break;
+    }
+    Controls.last_key = ev.key.toLowerCase();
+};

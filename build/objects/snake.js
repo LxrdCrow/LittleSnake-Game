@@ -13,54 +13,51 @@ export class Snake extends SnakeSegment {
         this.direction = Direction.NONE;
         this.hi_score = 0;
         this.points = 0;
-        this.lives = 9000001;
+        this.hearts = 1;
         this.segments = [];
         this.max_length = Snake.default_length;
-        this.position = position;
+        this.position = Position.copy(position);
         this.segments[0] = this;
         this.is_alive = true;
-        Board.place_object(this, position);
+        Board.placeObject(this, this.position);
     }
     jump() {
-        var position = Position.copy(this.position);
+        const pos = Position.copy(this.position);
         switch (this.direction) {
             case Direction.UP:
-                position.y -= this.jump_distance;
+                pos.y -= this.jump_distance;
                 break;
             case Direction.DOWN:
-                position.y += this.jump_distance;
+                pos.y += this.jump_distance;
                 break;
             case Direction.LEFT:
-                position.x -= this.jump_distance;
+                pos.x -= this.jump_distance;
                 break;
             case Direction.RIGHT:
-                position.x += this.jump_distance;
+                pos.x += this.jump_distance;
                 break;
+            default: return;
         }
-        this.update_board(position);
+        this.update_board(pos);
     }
     on_hit_screen_edge(edge) {
-        switch (edge) {
-            // TODO: Implement various edge functions
-            case ScreenEdge.NORTH:
-            case ScreenEdge.SOUTH:
-            case ScreenEdge.EAST:
-            case ScreenEdge.WEST:
-        }
+        console.warn(`Hit screen edge: ${ScreenEdge[edge]}`);
+        // Comportamento attuale: wrapping gestito in process_turn()
     }
     die() {
         this.hit_detected = true;
-        this.hi_score = this.points > this.hi_score
-            ? this.points
-            : this.hi_score;
-        Game.hi_score = this.hi_score > Game.hi_score
-            ? this.hi_score
-            : Game.hi_score;
-        if (this.lives == 0) {
-            this.is_alive = false;
-            return Game.reset();
+        if (this.points > this.hi_score) {
+            this.hi_score = this.points;
         }
-        this.lives -= 1;
+        if (this.hi_score > Game.hi_score) {
+            Game.hi_score = this.hi_score;
+        }
+        if (this.hearts === 0) {
+            this.is_alive = false;
+            Game.reset();
+            return;
+        }
+        this.hearts -= 1;
         this.destroy();
         this.position = new Position(0, 0);
         this.direction = Direction.NONE;
@@ -70,24 +67,19 @@ export class Snake extends SnakeSegment {
         this.skip_next_turn = (speed === Speed.SLOW);
     }
     process_turn() {
-        // Don't process if dead
-        if (!this.is_alive) {
+        var _a;
+        if (!this.is_alive)
             return;
-        }
-        // Skip every other clock tick unless moving fast
-        if (this.speed != Speed.FAST && Game.clock.tick == ClockTick.ODD) {
+        if (this.speed !== Speed.FAST && Game.clock.tick === ClockTick.ODD)
             return;
-        }
-        // Skip 3 clock ticks if moving slow
-        if (this.speed == Speed.SLOW && Game.clock.tick == ClockTick.EVEN) {
+        if (this.speed === Speed.SLOW && Game.clock.tick === ClockTick.EVEN) {
             this.skip_next_turn = !this.skip_next_turn;
-            if (this.skip_next_turn) {
+            if (this.skip_next_turn)
                 return;
-            }
         }
         this.hit_detected = false;
         let is_moving = true;
-        let pos = Position.copy(this.position);
+        const pos = Position.copy(this.position);
         switch (this.direction) {
             case Direction.UP:
                 pos.y -= 1;
@@ -103,26 +95,29 @@ export class Snake extends SnakeSegment {
                 break;
             case Direction.NONE:
                 is_moving = false;
+                break;
+            default: is_moving = false;
         }
         if (is_moving) {
+            // Wrapping (toroidale)
             if (pos.x < 0) {
                 pos.x = Board.width - 1;
-                // this.onHitScreenEdge(ScreenEdge.WEST)
+                this.on_hit_screen_edge(ScreenEdge.WEST);
             }
-            else if (pos.y < 0) {
-                pos.y = Board.height - 1;
-                // this.onHitScreenEdge(ScreenEdge.NORTH)
-            }
-            else if (pos.x == Board.width) {
+            else if (pos.x >= Board.width) {
                 pos.x = 0;
-                // this.onHitScreenEdge(ScreenEdge.SOUTH)
+                this.on_hit_screen_edge(ScreenEdge.EAST);
             }
-            else if (pos.y == Board.height) {
+            if (pos.y < 0) {
+                pos.y = Board.height - 1;
+                this.on_hit_screen_edge(ScreenEdge.NORTH);
+            }
+            else if (pos.y >= Board.height) {
                 pos.y = 0;
-                // this.onHitScreenEdge(ScreenEdge.SOUTH)
+                this.on_hit_screen_edge(ScreenEdge.SOUTH);
             }
-            if (Board.grid[pos.x][pos.y]) {
-                var object = Board.grid[pos.x][pos.y];
+            if ((_a = Board.grid[pos.x]) === null || _a === void 0 ? void 0 : _a[pos.y]) {
+                const object = Board.grid[pos.x][pos.y];
                 object.handle_collision(this);
             }
         }
@@ -135,23 +130,23 @@ export class Snake extends SnakeSegment {
     }
     update_board(pos) {
         let lastPosition = Position.copy(this.position);
-        for (var i = 0, ii = this.segments.length; i != ii; i++) {
-            let segment = this.segments[i];
-            let newPosition = (i == 0)
-                ? pos
-                : lastPosition;
+        for (let i = 0; i < this.segments.length; i++) {
+            const segment = this.segments[i];
+            const newPosition = (i === 0) ? pos : lastPosition;
             lastPosition = segment.position;
-            Board.move_object(segment, newPosition);
+            Board.moveObject(segment, newPosition);
         }
         if (this.segments.length <= this.max_length) {
-            let newSegment = new SnakeSegment(lastPosition);
+            const newSegment = new SnakeSegment(lastPosition);
             this.segments.push(newSegment);
-            Board.place_object(newSegment, lastPosition);
+            Board.placeObject(newSegment, lastPosition);
         }
     }
     destroy() {
-        for (var i = 0, ii = this.segments.length; i != ii; i++) {
-            Board.remove_object_at(this.segments[i].position);
+        for (const segment of this.segments) {
+            if (segment && segment.position) {
+                Board.removeObjectAt(segment.position);
+            }
         }
         this.segments = [this];
         this.max_length = Snake.default_length;

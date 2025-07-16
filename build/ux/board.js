@@ -1,56 +1,72 @@
 import { Position } from '../types/position.js';
 import { Canvas } from './canvas.js';
 export class Board {
-    static place_object(object, position) {
-        Board.grid[position.x][position.y] = object;
-        object.position = Position.copy(position);
+    static init() {
+        if (!Canvas.width || !Canvas.height) {
+            throw new Error("Canvas must be initialized before Board.");
+        }
+        Board.width = Math.floor(Canvas.width / Board.tileSize);
+        Board.height = Math.floor(Canvas.height / Board.tileSize);
+        Board.grid = Array.from({ length: Board.width }, () => new Array(Board.height).fill(null));
     }
-    static remove_object_at(position) {
-        Board.grid[position.x][position.y] = null;
-    }
-    static move_object(object, newPosition) {
-        Board.remove_object_at(object.position);
-        Board.place_object(object, newPosition);
-    }
-    static place_at_random(object) {
-        var position = Board.generate_random_position();
-        Board.place_object(object, position);
-    }
-    static move_to_random(object) {
-        var position = Board.generate_random_position();
-        Board.move_object(object, position);
-    }
-    static generate_random_position() {
-        var position;
-        while (!position) {
-            var x = Math.floor(Math.random() * Board.width);
-            var y = Math.floor(Math.random() * Board.height);
-            if (!Board.grid[x][y]) {
-                return new Position(x, y);
+    static clear() {
+        for (let x = 0; x < Board.width; x++) {
+            for (let y = 0; y < Board.height; y++) {
+                Board.grid[x][y] = null;
             }
         }
     }
-    static init() {
-        Board.height = Canvas.height / Board.block_size;
-        Board.width = Canvas.width / Board.block_size;
-        Board.grid = new Array(Board.width);
-        for (var i = 0, ii = Board.width; i != ii; ++i) {
-            Board.grid[i] = new Array(Board.height);
+    static placeObject(object, position) {
+        Board.grid[position.x][position.y] = object;
+        object.position = Position.copy(position);
+    }
+    static removeObjectAt(position) {
+        Board.grid[position.x][position.y] = null;
+    }
+    static moveObject(object, newPosition) {
+        Board.removeObjectAt(object.position);
+        Board.placeObject(object, newPosition);
+    }
+    static placeAtRandom(object) {
+        const pos = Board.generateRandomPosition();
+        if (pos) {
+            Board.placeObject(object, pos);
         }
     }
+    static moveToRandom(object) {
+        const pos = Board.generateRandomPosition();
+        if (pos) {
+            Board.moveObject(object, pos);
+        }
+    }
+    static generateRandomPosition() {
+        const maxAttempts = Board.width * Board.height;
+        let attempts = 0;
+        while (attempts < maxAttempts) {
+            const x = Math.floor(Math.random() * Board.width);
+            const y = Math.floor(Math.random() * Board.height);
+            if (!Board.grid[x][y]) {
+                return new Position(x, y);
+            }
+            attempts++;
+        }
+        return null; // All tiles are occupied
+    }
     static draw() {
-        Canvas.fill(Board.bg_color);
-        for (var cx = 0; cx < Board.width; cx++) {
-            for (var cy = 0; cy < Board.height; cy++) {
-                if (Board.grid[cx][cy]) {
-                    Board.grid[cx][cy].draw();
+        Canvas.fill(Board.bgColor);
+        for (let x = 0; x < Board.width; x++) {
+            for (let y = 0; y < Board.height; y++) {
+                const obj = Board.grid[x][y];
+                if (obj) {
+                    obj.draw();
                 }
             }
         }
     }
 }
-Board.bg_color = "#000A1F";
-Board.grid_color = "#001F5C";
-Board.block_size = 8;
-Board.height = 0;
+Board.bgColor = "#000A1F";
+Board.gridColor = "#001F5C";
+Board.tileSize = 8;
 Board.width = 0;
+Board.height = 0;
+Board.grid = [];

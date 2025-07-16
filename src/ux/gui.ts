@@ -9,8 +9,8 @@ export abstract class GUI {
 
     static init() {
     GUI.header = <HTMLElement>document.querySelector("header")
-    GUI.score = <HTMLElement>document.querySelector("#player-one-score")
-    GUI.lives = <HTMLElement>document.querySelector("#player-one-lives")
+    GUI.score = <HTMLElement>document.querySelector("#player-score")
+    GUI.lives = <HTMLElement>document.querySelector("#player-lives")
     GUI.build = <HTMLElement>document.querySelector("#build")
 }
 
@@ -18,11 +18,11 @@ export abstract class GUI {
     static draw() {
 
         GUI.lives.innerText = Game.is_running
-            ? "Lives: " + Game.player_one.lives
+            ? "Hearts: " + Game.player.hearts
             : "Press Start"
 
         GUI.score.innerText = Game.is_running
-            ? "Score: " + Game.player_one.points
+            ? "Score: " + Game.player.points
             : "Hi Score: " + Game.hi_score            
     }
 }

@@ -6,37 +6,31 @@ import { Snake } from './snake.js'
 
 export class SnakeSegment implements IGameObject {
 
-    public position: Position
-    
-    public color_index = 0
+	public position: Position
+	public color_index = 0
 
-    public color(): string {
+	constructor(position: Position) {
+		this.position = position
+	}
 
-        let colors = [ 
-            "#FF0000", "#FF9966", 
-            "#FFFA66", "#66FF66",
-            "#66FFFD", "#6699FF",
-            "#7966FF", "#F366FF" 
-        ] 
+	public color(): string {
+		const colors = [
+			 "#66FF66",
+		]
 
-        this.color_index++
-        if (this.color_index > colors.length) { this.color_index = 0 }
-        return colors[this.color_index]
-    }
-            
-    constructor(position: Position) {
+		this.color_index = (this.color_index + 1) % colors.length
+		return colors[this.color_index]
+	}
 
-        this.position = position
-    }
+	public draw(): void {
+		const boardX = this.position.x * Board.tileSize
+		const boardY = this.position.y * Board.tileSize
+		const size = Board.tileSize
 
-    public draw() {
+		Canvas.fillRect(boardX, boardY, size, size, this.color())
+	}
 
-        var boardX = (this.position.x * Board.block_size)
-        var boardY = (this.position.y * Board.block_size)
-        var size = Board.block_size
-
-        Canvas.fill_rect(boardX, boardY, size, size, this.color())
-    }
-
-    public handle_collision(snake: Snake) { snake.die() }
+	public handle_collision(snake: Snake): void {
+		snake.die()
+	}
 }

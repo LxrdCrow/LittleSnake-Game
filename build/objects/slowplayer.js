@@ -3,27 +3,27 @@ import { Board, Canvas } from '../ux/index.js';
 export class SlowPlayer {
     constructor() {
         this.color = "#3366FF";
-        this.index = SlowPlayer.items_index;
-        ++SlowPlayer.items_index;
-        ++SlowPlayer.items_active;
+        this.index = SlowPlayer.items_index++;
+        SlowPlayer.items_active++;
     }
     handle_collision(snake) {
         snake.set_speed(Speed.SLOW);
         this.destroy();
     }
     draw() {
-        if (!this.position) {
+        if (!this.position)
             return;
-        }
-        var x = (this.position.x * Board.block_size) + 2;
-        var y = (this.position.y * Board.block_size) + 2;
-        var size = Board.block_size - 4;
-        Canvas.draw_rect(x, y, size, size, this.color);
+        const x = (this.position.x * Board.tileSize) + 2;
+        const y = (this.position.y * Board.tileSize) + 2;
+        const size = Board.tileSize - 4;
+        Canvas.drawRect(x, y, size, size, this.color);
     }
     destroy() {
-        Board.remove_object_at(this.position);
+        if (this.position) {
+            Board.removeObjectAt(this.position);
+        }
         delete SlowPlayer.instances[this.index];
-        --SlowPlayer.items_active;
+        SlowPlayer.items_active--;
     }
 }
 SlowPlayer.instances = {};

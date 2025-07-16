@@ -1,27 +1,31 @@
-import { Game } from '../game.js'
+import { Game } from '../game.js';
 
 interface IButtons {
-    start: HTMLButtonElement
-    pause: HTMLButtonElement
-    reset: HTMLButtonElement
+    start: HTMLButtonElement;
+    pause: HTMLButtonElement;
+    reset: HTMLButtonElement;
 }
 
 export class Console {
+    static buttons: IButtons;
 
-    static buttons: IButtons = {
-        start: null,
-        pause: null,
-        reset: null
+    static init(): void {
+        const startBtn = document.querySelector("#start") as HTMLButtonElement;
+        const pauseBtn = document.querySelector("#pause") as HTMLButtonElement;
+        const resetBtn = document.querySelector("#reset") as HTMLButtonElement;
+
+        if (!startBtn || !pauseBtn || !resetBtn) {
+            throw new Error("Uno o più pulsanti non trovati nel DOM.");
+        }
+
+        Console.buttons = {
+            start: startBtn,
+            pause: pauseBtn,
+            reset: resetBtn
+        };
+
+        Console.buttons.start.onclick = Game.start;
+        Console.buttons.pause.onclick = Game.pause;
+        Console.buttons.reset.onclick = Game.reset;
     }
-    
-    static init() {
-        
-        Console.buttons.start = <HTMLButtonElement>document.querySelector("#start")
-        Console.buttons.pause = <HTMLButtonElement>document.querySelector("#pause")
-        Console.buttons.reset = <HTMLButtonElement>document.querySelector("#reset")
-
-        Console.buttons.start.onclick = () => { Game.start() }
-        Console.buttons.pause.onclick = () => { Game.pause() }
-        Console.buttons.reset.onclick = () => { Game.reset() }
-    }        
 }

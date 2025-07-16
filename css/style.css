@@ -18,9 +18,16 @@ body {
     font-family: 'Courier New', Courier, monospace;
 }
 
+canvas {
+    display: block;
+    border: 1px solid var(--fg-1);
+    margin-top: 20px;
+}
+
+
 header {
-    width: 640px;
-    height: 120px;
+    width: 500px;
+    height: 100px;
     font-size: 14px;
     border: 1px solid var(--fg-1);
     border-bottom: none;

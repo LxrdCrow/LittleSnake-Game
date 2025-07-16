@@ -2,52 +2,74 @@ export enum ClockType { TIMED, INFINITE }
 export enum ClockTick { EVEN, ODD }
 
 export class Timer {
+    private handle: number | null = null;
+    private interval: number;
+    private duration: number;
 
-    private handle: number
-    private interval: number
+    public type: ClockType;
+    public tick: ClockTick = ClockTick.EVEN;
+    public is_running: boolean = false;
+    public is_paused: boolean = false;
 
-    public type: ClockType
-    public tick: ClockTick = ClockTick.EVEN
-    public is_running: boolean
-    public is_paused: boolean
+    private handler: () => void;
 
-    private handler: () => any = () => { console.log("No clock event") }
+    constructor(interval: number, duration: number, handler: () => void) {
+        this.interval = interval;
+        this.duration = duration;
+        this.handler = handler ?? (() => console.log("No clock event"));
+        this.type = (duration === 0) ? ClockType.INFINITE : ClockType.TIMED;
+    }
 
-    private on_elapsed = () => {
+    private on_elapsed = (): void => {
+        if (this.is_paused) return;
 
-        if (this.is_paused) {  return }
+        // Alterna EVEN/ODD
         this.tick = (this.tick === ClockTick.EVEN)
             ? ClockTick.ODD
-            : ClockTick.EVEN
+            : ClockTick.EVEN;
 
-        this.handler()
-        if (this.type == ClockType.TIMED) { this.stop() }
+        // Esegui handler
+        this.handler();
+
+        // Ferma se è un timer singolo
+        if (this.type === ClockType.TIMED) {
+            this.stop();
+        }
+    };
+
+    public start(): void {
+        if (this.is_running) {
+            this.stop(); // Previene duplicazioni
+        }
+
+        this.is_running = true;
+
+        if (this.type === ClockType.INFINITE) {
+            this.handle = window.setInterval(this.on_elapsed, this.interval);
+        } else {
+            this.handle = window.setTimeout(this.on_elapsed, this.interval);
+        }
     }
 
-    constructor(interval: number, duration: number, handler: () => any) {
+    public stop(): void {
+        if (!this.handle) return;
 
-        this.interval = interval
-        this.handler = handler
-        this.type = (duration == 0) ? ClockType.INFINITE : ClockType.TIMED
+        this.is_running = false;
+
+        if (this.type === ClockType.INFINITE) {
+            window.clearInterval(this.handle);
+        } else {
+            window.clearTimeout(this.handle);
+        }
+
+        this.handle = null;
     }
 
-    public start() {
-
-        this.is_running = true
-        this.handle = (this.type == ClockType.INFINITE)
-            ? window.setInterval(this.on_elapsed.bind(this), this.interval)
-            : window.setTimeout(this.on_elapsed.bind(this), this.interval)
+    public pause(): void {
+        this.is_paused = true;
     }
 
-    public stop() {
-
-        this.is_running = false
-        return (this.type == ClockType.INFINITE)
-            ? window.clearInterval(this.handle)
-            : window.clearTimeout(this.handle)
+    public resume(): void {
+        this.is_paused = false;
     }
-
-    public pause() { this.is_paused = true }
-
-    public resume() { this.is_paused = false }                
 }

@@ -1,10 +1,10 @@
 import { IGameObject, Position, Speed } from '../types/index.js'
 import { Board, Canvas } from '../ux/index.js'
-import { Snake, Coin } from './index.js'
+import { Snake } from './snake.js'
 
 export class SlowPlayer implements IGameObject {
 
-	public static instances: { [index: number]: Coin } = {}
+	public static instances: { [index: number]: SlowPlayer } = {}
 	public static items_index: number = 0
 	public static items_active: number = 0
 
@@ -13,33 +13,30 @@ export class SlowPlayer implements IGameObject {
 	public color = "#3366FF"
 
 	constructor() {
-
-		this.index = SlowPlayer.items_index
-		++SlowPlayer.items_index
-		++SlowPlayer.items_active
+		this.index = SlowPlayer.items_index++
+		SlowPlayer.items_active++
 	}
 
-	public handle_collision(snake: Snake) {
-
+	public handle_collision(snake: Snake): void {
 		snake.set_speed(Speed.SLOW)
 		this.destroy()
 	}
 
-	public draw() {
+	public draw(): void {
+		if (!this.position) return
 
-		if (!this.position) { return }
+		const x = (this.position.x * Board.tileSize) + 2
+		const y = (this.position.y * Board.tileSize) + 2
+		const size = Board.tileSize - 4
 
-		var x = (this.position.x * Board.block_size) + 2
-		var y = (this.position.y * Board.block_size) + 2
-		var size = Board.block_size - 4
-
-		Canvas.draw_rect(x, y, size, size, this.color)
+		Canvas.drawRect(x, y, size, size, this.color)
 	}
-	
-	public destroy() {
 
-		Board.remove_object_at(this.position)
+	public destroy(): void {
+		if (this.position) {
+			Board.removeObjectAt(this.position)
+		}
 		delete SlowPlayer.instances[this.index]
-		--SlowPlayer.items_active
+		SlowPlayer.items_active--
 	}
 }

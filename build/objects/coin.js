@@ -2,12 +2,13 @@ import { Canvas, Board } from '../ux/index.js';
 export class Coin {
     constructor(value) {
         this.value = value;
-        this.index = Coin.coins_index;
-        ++Coin.coins_index;
-        ++Coin.coins_active;
+        this.index = Coin.coins_index++;
+        Coin.coins_active++;
     }
     static create_random() {
-        return new Coin(Coin.values[Math.floor(Math.random() * Coin.values.length)]);
+        const value = Coin.values[Math.floor(Math.random() * Coin.values.length)];
+        const coin = new Coin(value);
+        return coin;
     }
     handle_collision(snake) {
         snake.points += this.value;
@@ -15,12 +16,11 @@ export class Coin {
         this.destroy();
     }
     draw() {
-        if (!this.position) {
+        if (!this.position)
             return;
-        }
-        let x = (this.position.x * Board.block_size) + (Board.block_size / 2);
-        let y = (this.position.y * Board.block_size) + (Board.block_size / 2);
-        let r = (Board.block_size / 2) - 1;
+        const x = (this.position.x * Board.tileSize) + (Board.tileSize / 2);
+        const y = (this.position.y * Board.tileSize) + (Board.tileSize / 2);
+        const r = (Board.tileSize / 2) - 1;
         Canvas.context.beginPath();
         Canvas.context.arc(x, y, r, 0, 2 * Math.PI, false);
         Canvas.context.strokeStyle = "#FFFF00";
@@ -29,9 +29,11 @@ export class Coin {
         Canvas.context.fill();
     }
     destroy() {
-        Board.remove_object_at(this.position);
+        if (this.position) {
+            Board.removeObjectAt(this.position);
+        }
         delete Coin.instances[this.index];
-        --Coin.coins_active;
+        Coin.coins_active--;
     }
 }
 Coin.values = [200, 600, 800, 1000, 2000];

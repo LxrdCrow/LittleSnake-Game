@@ -1,46 +1,71 @@
-import { Direction, GameKey } from '../types/index.js'
-import { Game } from '../game.js'
+import { Direction } from '../types/index.js';
+import { Game } from '../game.js';
 
 export class Controls {
 
-    static last_key: number = null
-    
-    static on_key_up = (ev: KeyboardEvent) => { Controls.last_key = ev.keyCode }
+	static last_key: string | null = null;
 
-    static process_input() {
+	static on_key_down = (ev: KeyboardEvent): void => {
+		// Ignora input se l'utente sta scrivendo in input/textarea
+		if ((ev.target as HTMLElement).tagName === 'INPUT' || (ev.target as HTMLElement).tagName === 'TEXTAREA') {
+			return;
+		}
 
-        if (!Controls.last_key) { return }
+		// Blocca comportamento predefinito per tasti di gioco
+		switch (ev.key.toLowerCase()) {
+			case "w":
+			case "arrowup":
+			case "s":
+			case "arrowdown":
+			case "a":
+			case "arrowleft":
+			case "d":
+			case "arrowright":
+			case " ":
+				ev.preventDefault();
+				break;
+		}
 
-        switch (Controls.last_key) {
+		Controls.last_key = ev.key.toLowerCase();
+	};
 
-            case GameKey.UP:
-                if (Game.player_one.direction != Direction.DOWN) {
-                    Game.player_one.direction = Direction.UP
-                }
-                break
+	static process_input(): void {
+		if (!Controls.last_key) return;
 
-            case GameKey.DOWN:
-                if (Game.player_one.direction != Direction.UP) {
-                    Game.player_one.direction = Direction.DOWN
-                }
-                break
+		switch (Controls.last_key) {
+			case "w":
+			case "arrowup":
+				if (Game.player.direction !== Direction.DOWN) {
+					Game.player.direction = Direction.UP;
+				}
+				break;
 
-            case GameKey.LEFT:
-                if (Game.player_one.direction != Direction.RIGHT) {
-                    Game.player_one.direction = Direction.LEFT
-                }
-                break
+			case "s":
+			case "arrowdown":
+				if (Game.player.direction !== Direction.UP) {
+					Game.player.direction = Direction.DOWN;
+				}
+				break;
 
-            case GameKey.RIGHT:
-                if (Game.player_one.direction != Direction.LEFT) {
-                    Game.player_one.direction = Direction.RIGHT
-                }
-                break
+			case "a":
+			case "arrowleft":
+				if (Game.player.direction !== Direction.RIGHT) {
+					Game.player.direction = Direction.LEFT;
+				}
+				break;
 
-            case GameKey.SPACEBAR:
-                Game.player_one.jump()
-        }
+			case "d":
+			case "arrowright":
+				if (Game.player.direction !== Direction.LEFT) {
+					Game.player.direction = Direction.RIGHT;
+				}
+				break;
 
-        Controls.last_key = null
-    }
+			case " ":
+				Game.player.jump();
+				break;
+		}
+
+		Controls.last_key = null;
+	}
 }

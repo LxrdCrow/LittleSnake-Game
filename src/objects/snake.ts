@@ -1,8 +1,11 @@
-import { Speed, Direction, Position, ScreenEdge, ClockTick, IPlayerObject, IGameObject } from '../types/index.js'
-import { SnakeSegment } from './snakesegments.js';
+import { 
+	Speed, Direction, Position, ScreenEdge, ClockTick, 
+	IPlayerObject, IGameObject 
+} from '../types/index.js'
+import { SnakeSegment } from './snakesegments.js'
 import { Board } from '../ux/index.js'
 import { Game } from '../game.js'
-import { IDrawable } from '../types/gameobjects.js';
+import { IDrawable } from '../types/gameobjects.js'
 
 export class Snake extends SnakeSegment implements IPlayerObject {
 
@@ -12,84 +15,64 @@ export class Snake extends SnakeSegment implements IPlayerObject {
 	public skip_next_turn: boolean = false
 	public hit_detected: boolean = false
 	public is_alive: boolean = false
-	
+
 	public speed: Speed = Speed.NORMAL
 	public direction: Direction = Direction.NONE
-	public position: Position 
+	public position: Position
 
 	public hi_score: number = 0
 	public points: number = 0
-	public lives: number = 9000001
+	public hearts: number = 1
 
 	public segments: SnakeSegment[] = []
 	public max_length: number = Snake.default_length
 
 	constructor(position: Position) {
-
 		super(position)
-		this.position = position
+		this.position = Position.copy(position)
 		this.segments[0] = this
 		this.is_alive = true
 
-		Board.place_object(this, position)
+		Board.placeObject(this, this.position)
 	}
 
 	public jump() {
-
-		var position: Position = Position.copy(this.position)
+		const pos = Position.copy(this.position)
 
 		switch (this.direction) {
-
-			case Direction.UP:
-				position.y -= this.jump_distance
-				break
-
-			case Direction.DOWN:
-				position.y += this.jump_distance
-				break
-
-			case Direction.LEFT:
-				position.x -= this.jump_distance
-				break
-
-			case Direction.RIGHT:
-				position.x += this.jump_distance
-				break
+			case Direction.UP:    pos.y -= this.jump_distance; break
+			case Direction.DOWN:  pos.y += this.jump_distance; break
+			case Direction.LEFT:  pos.x -= this.jump_distance; break
+			case Direction.RIGHT: pos.x += this.jump_distance; break
+			default: return 
 		}
 
-		this.update_board(position)
+		this.update_board(pos)
 	}
 
 	public on_hit_screen_edge(edge: ScreenEdge) {
-		
-		switch (edge) {
-			
-			// TODO: Implement various edge functions
-			case ScreenEdge.NORTH:
-			case ScreenEdge.SOUTH:
-			case ScreenEdge.EAST:
-			case ScreenEdge.WEST:
-		}
+		console.warn(`Hit screen edge: ${ScreenEdge[edge]}`)
+
+		// Comportamento attuale: wrapping gestito in process_turn()
 	}
 
 	public die() {
-		
 		this.hit_detected = true
-		this.hi_score = this.points > this.hi_score
-			? this.points
-			: this.hi_score
-		
-		Game.hi_score = this.hi_score > Game.hi_score
-			? this.hi_score
-			: Game.hi_score
 
-		if (this.lives == 0) {
-
-			this.is_alive = false
-			return Game.reset()
+		if (this.points > this.hi_score) {
+			this.hi_score = this.points
+		}
+		if (this.hi_score > Game.hi_score) {
+			Game.hi_score = this.hi_score
 		}
 
-		this.lives -= 1
+		if (this.hearts === 0) {
+			this.is_alive = false
+			Game.reset()
+			return
+		}
+
+		this.hearts -= 1
 		this.destroy()
 
 		this.position = new Position(0, 0)
@@ -97,109 +80,88 @@ export class Snake extends SnakeSegment implements IPlayerObject {
 	}
 
 	public set_speed(speed: Speed) {
-		
 		this.speed = speed
 		this.skip_next_turn = (speed === Speed.SLOW)
 	}
 
 	public process_turn() {
-					
-		// Don't process if dead
-		if (!this.is_alive) { return }
-					
-		// Skip every other clock tick unless moving fast
-		if (this.speed != Speed.FAST && Game.clock.tick == ClockTick.ODD) { return }
+		if (!this.is_alive) return
 
-		// Skip 3 clock ticks if moving slow
-		if (this.speed == Speed.SLOW && Game.clock.tick == ClockTick.EVEN) {
+		if (this.speed !== Speed.FAST && Game.clock.tick === ClockTick.ODD) return
 
+		if (this.speed === Speed.SLOW && Game.clock.tick === ClockTick.EVEN) {
 			this.skip_next_turn = !this.skip_next_turn
-			if (this.skip_next_turn) { return  }
+			if (this.skip_next_turn) return
 		}
-		
+
 		this.hit_detected = false
 
 		let is_moving = true
-		let pos: Position = Position.copy(this.position)
+		const pos = Position.copy(this.position)
 
 		switch (this.direction) {
-
-			case Direction.UP:
-				pos.y -= 1
-				break
-
-			case Direction.DOWN:
-				pos.y += 1
-				break
-
-			case Direction.LEFT:
-				pos.x -= 1
-				break
-
-			case Direction.RIGHT:
-				pos.x += 1
-				break
-
-			case Direction.NONE:
-				is_moving = false
+			case Direction.UP:    pos.y -= 1; break
+			case Direction.DOWN:  pos.y += 1; break
+			case Direction.LEFT:  pos.x -= 1; break
+			case Direction.RIGHT: pos.x += 1; break
+			case Direction.NONE:  is_moving = false; break
+			default:              is_moving = false
 		}
-		
-		if (is_moving) {
 
+		if (is_moving) {
+			// Wrapping (toroidale)
 			if (pos.x < 0) {
 				pos.x = Board.width - 1
-				// this.onHitScreenEdge(ScreenEdge.WEST)
-			}
-			else if (pos.y < 0) {
-				pos.y = Board.height - 1
-				// this.onHitScreenEdge(ScreenEdge.NORTH)
-			}
-			else if (pos.x == Board.width) {
+				this.on_hit_screen_edge(ScreenEdge.WEST)
+			} else if (pos.x >= Board.width) {
 				pos.x = 0
-				// this.onHitScreenEdge(ScreenEdge.SOUTH)
-			}
-			else if (pos.y == Board.height) {
-				pos.y = 0
-				// this.onHitScreenEdge(ScreenEdge.SOUTH)
+				this.on_hit_screen_edge(ScreenEdge.EAST)
 			}
 
-			if (Board.grid[pos.x][pos.y]) {
-				var object: IGameObject = <IGameObject>Board.grid[pos.x][pos.y]
+			if (pos.y < 0) {
+				pos.y = Board.height - 1
+				this.on_hit_screen_edge(ScreenEdge.NORTH)
+			} else if (pos.y >= Board.height) {
+				pos.y = 0
+				this.on_hit_screen_edge(ScreenEdge.SOUTH)
+			}
+
+			if (Board.grid[pos.x]?.[pos.y]) {
+				const object = Board.grid[pos.x][pos.y] as IGameObject
 				object.handle_collision(this)
 			}
 		}
-		
-		if (!this.is_alive) { this.destroy() }
-		else if (!this.hit_detected) { this.update_board(pos) }
+
+		if (!this.is_alive) {
+			this.destroy()
+		} else if (!this.hit_detected) {
+			this.update_board(pos)
+		}
 	}
 
 	private update_board(pos: Position) {
-
 		let lastPosition = Position.copy(this.position)
-		for (var i = 0, ii = this.segments.length; i != ii; i++) {
 
-			let segment = this.segments[i]
-			let newPosition = (i == 0)
-				? pos
-				: lastPosition
+		for (let i = 0; i < this.segments.length; i++) {
+			const segment = this.segments[i]
+			const newPosition = (i === 0) ? pos : lastPosition
 
 			lastPosition = segment.position
-			Board.move_object(segment, newPosition)                
+			Board.moveObject(segment, newPosition)
 		}
 
 		if (this.segments.length <= this.max_length) {
-
-			let newSegment = new SnakeSegment(lastPosition)
+			const newSegment = new SnakeSegment(lastPosition)
 			this.segments.push(newSegment)
-
-			Board.place_object(newSegment, lastPosition)                
-		}            
-	}        
+			Board.placeObject(newSegment, lastPosition)
+		}
+	}
 
 	private destroy() {
-
-		for (var i = 0, ii = this.segments.length; i != ii; i++) {
-			Board.remove_object_at(this.segments[i].position)                
+		for (const segment of this.segments) {
+			if (segment && segment.position) {
+				Board.removeObjectAt(segment.position)
+			}
 		}
 
 		this.segments = [this]

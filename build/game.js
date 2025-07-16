@@ -9,9 +9,12 @@ var GameDifficulty;
 })(GameDifficulty || (GameDifficulty = {}));
 export class Game {
     static init() {
-        Canvas.init(document.querySelector("canvas"));
-        let body = document.querySelector("body");
-        body.onkeyup = Controls.on_key_up;
+        const canvas = document.querySelector("canvas");
+        if (!canvas)
+            throw new Error("Canvas element not found!");
+        Canvas.init(canvas);
+        const body = document.querySelector("body");
+        body.onkeydown = Controls.on_key_down;
         Game.ready();
     }
     static ready() {
@@ -20,14 +23,13 @@ export class Game {
         Board.draw();
         GUI.init();
         GUI.draw();
-        Game.player_one = new Snake({ x: 0, y: 0 });
-        Game.player_one.direction = Direction.RIGHT;
+        Game.player = new Snake({ x: 0, y: 0 });
+        Game.player.direction = Direction.RIGHT;
         Game.clock = new Timer(GameDifficulty.DIFFICULT, 0, Game.on_clock_tick);
     }
     static start() {
-        if (Game.is_running) {
+        if (Game.is_running)
             return;
-        }
         if (Game.clock.is_paused) {
             return Game.pause();
         }
@@ -44,33 +46,33 @@ export class Game {
         GUI.draw();
     }
     static reset() {
-        Game.clock && Game.clock.stop();
+        var _a;
+        (_a = Game.clock) === null || _a === void 0 ? void 0 : _a.stop();
         Game.is_running = false;
         Game.ready();
     }
     static on_clock_tick() {
         Controls.process_input();
-        Game.player_one.process_turn();
-        if (Game.clock.tick == ClockTick.EVEN) {
-            // TODO: Move this to item randomizer class
-            Game.coinCounter += 1;
+        Game.player.process_turn();
+        if (Game.clock.tick === ClockTick.EVEN) {
+            Game.coinCounter++;
             if (Game.coinCounter >= 2) {
                 Game.coinCounter = 0;
-                if (!Math.floor(Math.random() + .5)) {
-                    var probability = (Coin.coins_active + .5) / 5;
-                    if (!Math.floor(Math.random() + probability)) {
-                        if (!Math.floor(Math.random() + .8)) {
-                            var coin = Coin.create_random();
-                            Board.place_at_random(coin);
+                if (Math.random() < 0.5) {
+                    const probability = (Coin.coins_active + 0.5) / 5;
+                    if (Math.random() > probability) {
+                        if (Math.random() < 0.8) {
+                            const coin = Coin.create_random();
+                            Board.placeAtRandom(coin);
                         }
                         else {
-                            if (!Math.floor(Math.random() + .5)) {
-                                var slowPlayer = new SlowPlayer();
-                                Board.place_at_random(slowPlayer);
+                            if (Math.random() < 0.5) {
+                                const slowPlayer = new SlowPlayer();
+                                Board.placeAtRandom(slowPlayer);
                             }
                             else {
-                                var fastPlayer = new FastPlayer();
-                                Board.place_at_random(fastPlayer);
+                                const fastPlayer = new FastPlayer();
+                                Board.placeAtRandom(fastPlayer);
                             }
                         }
                     }
@@ -83,6 +85,5 @@ export class Game {
 }
 Game.hi_score = 0;
 Game.is_running = false;
-// TODO: Move this to item randomizer class
-Game.coinCounter = 0;
+Game.coinCounter = 0; // TODO: move to item randomizer class
 Game.init();

@@ -2,26 +2,25 @@ export class Canvas {
     static init(el) {
         el.height = Canvas.height;
         el.width = Canvas.width;
-        Canvas.context = el.getContext("2d");
+        const ctx = el.getContext("2d");
+        if (!ctx) {
+            throw new Error("Impossibile inizializzare il contesto 2D del canvas.");
+        }
+        Canvas.context = ctx;
     }
     static fill(color) {
-        Canvas.context.beginPath();
-        Canvas.context.rect(0, 0, Canvas.width, Canvas.height);
         Canvas.context.fillStyle = color;
-        Canvas.context.fill();
+        Canvas.context.fillRect(0, 0, Canvas.width, Canvas.height);
     }
-    static fill_rect(x, y, w, h, color) {
-        Canvas.context.beginPath();
+    static fillRect(x, y, w, h, color) {
         Canvas.context.fillStyle = color;
         Canvas.context.fillRect(x, y, w, h);
     }
-    static draw_rect(x, y, w, h, color) {
-        Canvas.context.beginPath();
-        Canvas.context.lineWidth = 1;
+    static drawRect(x, y, w, h, color) {
         Canvas.context.strokeStyle = color;
-        Canvas.context.rect(x, y, w, h);
-        Canvas.context.stroke();
+        Canvas.context.lineWidth = 1;
+        Canvas.context.strokeRect(x, y, w, h);
     }
 }
-Canvas.width = 640;
-Canvas.height = 400;
+Canvas.width = 1400;
+Canvas.height = 700;

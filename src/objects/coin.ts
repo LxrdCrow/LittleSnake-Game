@@ -13,46 +13,44 @@ export class Coin implements IGameObject {
 	public value: number
 	public position: Position
 
-	public constructor(value: number) {
-
+	constructor(value: number) {
 		this.value = value
-		this.index = Coin.coins_index
-		++Coin.coins_index
-		++Coin.coins_active
+		this.index = Coin.coins_index++
+		Coin.coins_active++
 	}
 
-	public static create_random() {
-
-		return new Coin(Coin.values[Math.floor(Math.random() * Coin.values.length)])            
+	public static create_random(): Coin {
+		const value = Coin.values[Math.floor(Math.random() * Coin.values.length)]
+		const coin = new Coin(value)
+		return coin
 	}
 
 	public handle_collision(snake: Snake): void {
-
 		snake.points += this.value
 		snake.max_length += 8
 		this.destroy()
 	}
 
-	public draw() {
+	public draw(): void {
+		if (!this.position) return
 
-		if (!this.position) { return }
-
-		let x = (this.position.x * Board.block_size) + (Board.block_size / 2)
-		let y = (this.position.y * Board.block_size) + (Board.block_size / 2)
-		let r = (Board.block_size / 2) - 1
+		const x = (this.position.x * Board.tileSize) + (Board.tileSize / 2)
+		const y = (this.position.y * Board.tileSize) + (Board.tileSize / 2)
+		const r = (Board.tileSize / 2) - 1
 
 		Canvas.context.beginPath()
 		Canvas.context.arc(x, y, r, 0, 2 * Math.PI, false)
 		Canvas.context.strokeStyle = "#FFFF00"
 		Canvas.context.fillStyle = "#CCCC00"
 		Canvas.context.stroke()
-		Canvas.context.fill()	
+		Canvas.context.fill()
 	}
 
-	public destroy() {
-
-		Board.remove_object_at(this.position)
+	public destroy(): void {
+		if (this.position) {
+			Board.removeObjectAt(this.position)
+		}
 		delete Coin.instances[this.index]
-		--Coin.coins_active           
+		Coin.coins_active--
 	}
 }

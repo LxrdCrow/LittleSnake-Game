@@ -10,36 +10,57 @@ export var ClockTick;
 })(ClockTick || (ClockTick = {}));
 export class Timer {
     constructor(interval, duration, handler) {
+        this.handle = null;
         this.tick = ClockTick.EVEN;
-        this.handler = () => { console.log("No clock event"); };
+        this.is_running = false;
+        this.is_paused = false;
         this.on_elapsed = () => {
-            if (this.is_paused) {
+            if (this.is_paused)
                 return;
-            }
+            // Alterna EVEN/ODD
             this.tick = (this.tick === ClockTick.EVEN)
                 ? ClockTick.ODD
                 : ClockTick.EVEN;
+            // Esegui handler
             this.handler();
-            if (this.type == ClockType.TIMED) {
+            // Ferma se è un timer singolo
+            if (this.type === ClockType.TIMED) {
                 this.stop();
             }
         };
         this.interval = interval;
-        this.handler = handler;
-        this.type = (duration == 0) ? ClockType.INFINITE : ClockType.TIMED;
+        this.duration = duration;
+        this.handler = handler !== null && handler !== void 0 ? handler : (() => console.log("No clock event"));
+        this.type = (duration === 0) ? ClockType.INFINITE : ClockType.TIMED;
     }
     start() {
+        if (this.is_running) {
+            this.stop(); // Previene duplicazioni
+        }
         this.is_running = true;
-        this.handle = (this.type == ClockType.INFINITE)
-            ? window.setInterval(this.on_elapsed.bind(this), this.interval)
-            : window.setTimeout(this.on_elapsed.bind(this), this.interval);
+        if (this.type === ClockType.INFINITE) {
+            this.handle = window.setInterval(this.on_elapsed, this.interval);
+        }
+        else {
+            this.handle = window.setTimeout(this.on_elapsed, this.interval);
+        }
     }
     stop() {
+        if (!this.handle)
+            return;
         this.is_running = false;
-        return (this.type == ClockType.INFINITE)
-            ? window.clearInterval(this.handle)
-            : window.clearTimeout(this.handle);
+        if (this.type === ClockType.INFINITE) {
+            window.clearInterval(this.handle);
+        }
+        else {
+            window.clearTimeout(this.handle);
+        }
+        this.handle = null;
     }
-    pause() { this.is_paused = true; }
-    resume() { this.is_paused = false; }
+    pause() {
+        this.is_paused = true;
+    }
+    resume() {
+        this.is_paused = false;
+    }
 }
