@@ -41,30 +41,31 @@
 
 ### Work in progress
 
--> Next task: modificare game e controls per il GAME OVER
+- Next task: modificare velocità snake, aggiungere ostacoli
 
 - Logica di gioco:
 
-Types -> Dati/classi e costanti, il vocabolario del gioco
-UX -> Grafica e interfaccia del gioco
-Objects -> Tutte le entità interattive e gli oggetti di gioco
+    - Types -> Dati/classi e costanti, il vocabolario del gioco
+    - UX -> Grafica e interfaccia del gioco
+    - Objects -> Tutte le entità interattive e gli oggetti di gioco
 
 Possibili patch:
+<br>
 
 - Sistema a livelli
-    liv1: Il player arrivato a 25.000 punti vince -> + ostacoli
-    liv2 Il player arrivato a 50.000 vince -> +1nemico+ostacoli
-    liv3: Il player arrivato a 75.000 vince -> 2nemici+ostacoli+bonus/malus
-    liv4: Il player arrivato a 100.000 vince -> 3 nemici+ostacoli+bonus/malus
+    - liv1: Il player arrivato a 25.000 punti vince -> + ostacoli
+    - liv2 Il player arrivato a 50.000 vince -> +1nemico+ostacoli
+    - liv3: Il player arrivato a 75.000 vince -> 2nemici+ostacoli+bonus/malus
+    - liv4: Il player arrivato a 100.000 vince -> 3 nemici+ostacoli+bonus/malus
 
 - Effetti Sonori
-    effetto sonoro tasti, effetto sonoro gioco, effetto sonoro cuore, effetto game over
+  - effetto sonoro tasti, effetto sonoro gioco, effetto sonoro cuore, effetto game over
 
 - Ostacoli
-    blocchi muro rappresentati come linea nella griglia di gioco -> Se il serpente ha una vita sola è game over
+   - blocchi muro rappresentati come linea nella griglia di gioco -> Se il serpente ha una vita sola è game over
 
 - Aumento della difficoltà
-    Più si va avanti più è difficile
+    - Più si va avanti più è difficile
 
 - Vita unica con possibili vite extra
    - compaiono dopo un certo punteggio una vita exta (es. dopo 10.000 è un cuore in più) e deve essere raccolta entro 10 secondi
@@ -83,11 +84,8 @@ Possibili patch:
    - Insegue il player per ucciderlo, è completamente invulnerabile, se lo tocca è immediato game over o vita in meno, non racoglie nessun oggetto
    - Di colore bianco (per distinguersi)
 
-- Eliminare monete blu
-
-- Aggiungere 'Game Over'
+- Eliminare monete blu e sostituire con ostacoli
 
 
 - Quando è invincibile usare questi colori:
-    "#FF0000", "#FF9966", "#FFFA66", "#66FF66",
-	"#66FFFD", "#6699FF", "#7966FF", "#F366FF"
+   - "#FF0000", "#FF9966", "#FFFA66", "#66FF66", "#66FFFD", "#6699FF", "#7966FF", "#F366FF"
