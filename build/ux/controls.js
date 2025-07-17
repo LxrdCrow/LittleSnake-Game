@@ -37,12 +37,15 @@ export class Controls {
     }
 }
 Controls.last_key = null;
+Controls.on_key_up = (ev) => {
+    Controls.last_key = ev.key.toLowerCase();
+};
 Controls.on_key_down = (ev) => {
-    // Ignora input se l'utente sta scrivendo in input/textarea
+    //ignore input if user is typing in input/textarea
     if (ev.target.tagName === 'INPUT' || ev.target.tagName === 'TEXTAREA') {
         return;
     }
-    // Blocca comportamento predefinito per tasti di gioco
+    // Block default behavior for game controls
     switch (ev.key.toLowerCase()) {
         case "w":
         case "arrowup":

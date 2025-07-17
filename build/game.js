@@ -14,6 +14,7 @@ export class Game {
             throw new Error("Canvas element not found!");
         Canvas.init(canvas);
         const body = document.querySelector("body");
+        body.onkeyup = Controls.on_key_up;
         body.onkeydown = Controls.on_key_down;
         Game.ready();
     }
@@ -49,11 +50,30 @@ export class Game {
         var _a;
         (_a = Game.clock) === null || _a === void 0 ? void 0 : _a.stop();
         Game.is_running = false;
+        Game.is_game_over = false;
+        Game.coinCounter = 0;
+        // reset objects
+        Coin.instances = {};
+        Coin.coins_active = 0;
         Game.ready();
     }
+    static game_over() {
+        Game.is_game_over = true;
+        Game.reset();
+    }
     static on_clock_tick() {
+        if (Game.is_game_over) {
+            return;
+        }
         Controls.process_input();
         Game.player.process_turn();
+        if (Game.player.hearts < 0) {
+            Game.is_game_over = true;
+            Game.is_running = false;
+            Game.clock.stop();
+            Board.draw();
+            return;
+        }
         if (Game.clock.tick === ClockTick.EVEN) {
             Game.coinCounter++;
             if (Game.coinCounter >= 2) {
@@ -86,4 +106,5 @@ export class Game {
 Game.hi_score = 0;
 Game.is_running = false;
 Game.coinCounter = 0; // TODO: move to item randomizer class
+Game.is_game_over = false;
 Game.init();

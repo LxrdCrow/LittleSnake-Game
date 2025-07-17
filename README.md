@@ -41,6 +41,8 @@
 
 ### Work in progress
 
+-> Next task: modificare game e controls per il GAME OVER
+
 - Logica di gioco:
 
 Types -> Dati/classi e costanti, il vocabolario del gioco
@@ -65,7 +67,7 @@ Possibili patch:
     Più si va avanti più è difficile
 
 - Vita unica con possibili vite extra
-    compaiono dopo un certo punteggio una vita exta (es. dopo 10.000 è un cuore in più) e deve essere raccolta entro 10 secondi
+   - compaiono dopo un certo punteggio una vita exta (es. dopo 10.000 è un cuore in più) e deve essere raccolta entro 10 secondi
 
 - Aumentare velocità iniziale
 
@@ -74,12 +76,12 @@ Possibili patch:
 - Aumentare grandezza degli oggetti
 
 - Sistema bonus/malus
-    Bonus -> oggetto bonus per vite, super velocità 10 secondi, immortale per 10 secondi
-    Malus -> oggetto malus inverti comandi per 10 secondi, oggetto per rallentamento per 10 secondi, bordo letale per 20 secondi
+   - Bonus -> oggetto bonus per vite, super velocità 10 secondi, immortale per 10 secondi
+   - Malus -> oggetto malus inverti comandi per 10 secondi, oggetto per rallentamento per 10 secondi, bordo letale per 20 secondi
 
 - Nemico:
-    Insegue il player per ucciderlo, è completamente invulnerabile, se lo tocca è immediato game over o vita in meno, non racoglie nessun oggetto
-    Di colore Verde (per distinguersi)
+   - Insegue il player per ucciderlo, è completamente invulnerabile, se lo tocca è immediato game over o vita in meno, non racoglie nessun oggetto
+   - Di colore bianco (per distinguersi)
 
 - Eliminare monete blu
 

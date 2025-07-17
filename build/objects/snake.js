@@ -42,7 +42,7 @@ export class Snake extends SnakeSegment {
     }
     on_hit_screen_edge(edge) {
         console.warn(`Hit screen edge: ${ScreenEdge[edge]}`);
-        // Comportamento attuale: wrapping gestito in process_turn()
+        // wrapping gestito in process_turn()
     }
     die() {
         this.hit_detected = true;
@@ -52,12 +52,14 @@ export class Snake extends SnakeSegment {
         if (this.hi_score > Game.hi_score) {
             Game.hi_score = this.hi_score;
         }
-        if (this.hearts === 0) {
+        this.hearts -= 1;
+        // if hearts < 0 -> game over
+        if (this.hearts < 0) {
             this.is_alive = false;
-            Game.reset();
+            Game.is_game_over = true;
             return;
         }
-        this.hearts -= 1;
+        // or destroy snake
         this.destroy();
         this.position = new Position(0, 0);
         this.direction = Direction.NONE;

@@ -9,7 +9,6 @@ enum GameDifficulty {
 }
 
 export class Game {
-
     static clock: Timer;
     static player: Snake;
     static hi_score: number = 0;
@@ -23,6 +22,7 @@ export class Game {
         Canvas.init(canvas);
 
         const body = document.querySelector("body")!;
+        body.onkeyup = Controls.on_key_up;
         body.onkeydown = Controls.on_key_down;
 
 
@@ -65,14 +65,43 @@ export class Game {
     }
 
     static reset(): void {
+        
         Game.clock?.stop();
         Game.is_running = false;
+        Game.is_game_over = false; 
+        Game.coinCounter = 0;
+
+        // reset objects
+        Coin.instances = {};
+        Coin.coins_active = 0;
         Game.ready();
+    }
+    static is_game_over: boolean = false;
+
+    static game_over(): void {
+        Game.is_game_over = true;
+        Game.reset();
     }
 
     static on_clock_tick(): void {
+        if (Game.is_game_over) {
+            return;
+        }
+
         Controls.process_input();
         Game.player.process_turn();
+
+        if (Game.player.hearts < 0) {
+            Game.is_game_over = true;
+            Game.is_running   = false;
+            Game.clock.stop();
+
+            Board.draw();
+            return;
+        }
+
+
+
 
         if (Game.clock.tick === ClockTick.EVEN) {
             Game.coinCounter++;

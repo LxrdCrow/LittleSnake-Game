@@ -53,31 +53,34 @@ export class Snake extends SnakeSegment implements IPlayerObject {
 	public on_hit_screen_edge(edge: ScreenEdge) {
 		console.warn(`Hit screen edge: ${ScreenEdge[edge]}`)
 
-		// Comportamento attuale: wrapping gestito in process_turn()
+		// wrapping gestito in process_turn()
 	}
 
 	public die() {
-		this.hit_detected = true
+		this.hit_detected = true;
 
 		if (this.points > this.hi_score) {
-			this.hi_score = this.points
+			this.hi_score = this.points;
 		}
 		if (this.hi_score > Game.hi_score) {
-			Game.hi_score = this.hi_score
+			Game.hi_score = this.hi_score;
 		}
 
-		if (this.hearts === 0) {
-			this.is_alive = false
-			Game.reset()
-			return
+		this.hearts -= 1;
+
+		// if hearts < 0 -> game over
+		if (this.hearts < 0) {
+			this.is_alive = false;
+			Game.is_game_over = true; 
+			return;
 		}
 
-		this.hearts -= 1
-		this.destroy()
-
-		this.position = new Position(0, 0)
-		this.direction = Direction.NONE
+		// or destroy snake
+		this.destroy();
+		this.position = new Position(0, 0);
+		this.direction = Direction.NONE;
 	}
+
 
 	public set_speed(speed: Speed) {
 		this.speed = speed

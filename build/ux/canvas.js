@@ -21,6 +21,15 @@ export class Canvas {
         Canvas.context.lineWidth = 1;
         Canvas.context.strokeRect(x, y, w, h);
     }
+    static drawGameOverMessage() {
+        const message = "GAME OVER";
+        const fontSize = 40;
+        Canvas.context.font = `${fontSize}px 'Courier New', monospace`;
+        Canvas.context.fillStyle = "#00FF00";
+        Canvas.context.textAlign = "center";
+        Canvas.context.textBaseline = "middle";
+        Canvas.context.fillText(message, Canvas.width / 2, Canvas.height / 2);
+    }
 }
 Canvas.width = 1400;
 Canvas.height = 700;
