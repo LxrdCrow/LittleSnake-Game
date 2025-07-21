@@ -1,5 +1,5 @@
 import { ClockTick, Timer, Direction } from './types/index.js';
-import { Coin, Snake, SlowPlayer, FastPlayer } from './objects/index.js';
+import { Coin, Snake, Obstacle } from './objects/index.js';
 import { Board, Canvas, Console, Controls, GUI } from './ux/index.js';
 var GameDifficulty;
 (function (GameDifficulty) {
@@ -14,7 +14,6 @@ export class Game {
             throw new Error("Canvas element not found!");
         Canvas.init(canvas);
         const body = document.querySelector("body");
-        body.onkeyup = Controls.on_key_up;
         body.onkeydown = Controls.on_key_down;
         Game.ready();
     }
@@ -27,6 +26,13 @@ export class Game {
         Game.player = new Snake({ x: 0, y: 0 });
         Game.player.direction = Direction.RIGHT;
         Game.clock = new Timer(GameDifficulty.DIFFICULT, 0, Game.on_clock_tick);
+        // Aggiungi gli ostacoli statici
+        const midY = Math.floor(Board.height / 2);
+        const numObstacles = 25;
+        for (let i = 0; i < numObstacles; i++) {
+            const obs = new Obstacle();
+            Board.placeAtRandom(obs);
+        }
     }
     static start() {
         if (Game.is_running)
@@ -85,16 +91,6 @@ export class Game {
                             const coin = Coin.create_random();
                             Board.placeAtRandom(coin);
                         }
-                        else {
-                            if (Math.random() < 0.5) {
-                                const slowPlayer = new SlowPlayer();
-                                Board.placeAtRandom(slowPlayer);
-                            }
-                            else {
-                                const fastPlayer = new FastPlayer();
-                                Board.placeAtRandom(fastPlayer);
-                            }
-                        }
                     }
                 }
             }
@@ -105,6 +101,6 @@ export class Game {
 }
 Game.hi_score = 0;
 Game.is_running = false;
-Game.coinCounter = 0; // TODO: move to item randomizer class
+Game.coinCounter = 0;
 Game.is_game_over = false;
 Game.init();

@@ -15,7 +15,7 @@ export var Direction;
 })(Direction || (Direction = {}));
 export var Speed;
 (function (Speed) {
-    Speed[Speed["SLOW"] = 0] = "SLOW";
-    Speed[Speed["NORMAL"] = 1] = "NORMAL";
-    Speed[Speed["FAST"] = 2] = "FAST";
+    Speed[Speed["NORMAL"] = 0] = "NORMAL";
+    Speed[Speed["FAST"] = 1] = "FAST";
+    Speed[Speed["SUPERFAST"] = 2] = "SUPERFAST";
 })(Speed || (Speed = {}));

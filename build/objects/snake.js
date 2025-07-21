@@ -5,11 +5,11 @@ import { Game } from '../game.js';
 export class Snake extends SnakeSegment {
     constructor(position) {
         super(position);
-        this.jump_distance = 8;
+        this.jump_distance = 5;
         this.skip_next_turn = false;
         this.hit_detected = false;
         this.is_alive = false;
-        this.speed = Speed.NORMAL;
+        this.speed = Speed.FAST;
         this.direction = Direction.NONE;
         this.hi_score = 0;
         this.points = 0;
@@ -42,45 +42,45 @@ export class Snake extends SnakeSegment {
     }
     on_hit_screen_edge(edge) {
         console.warn(`Hit screen edge: ${ScreenEdge[edge]}`);
-        // wrapping gestito in process_turn()
     }
     die() {
         this.hit_detected = true;
-        if (this.points > this.hi_score) {
+        if (this.points > this.hi_score)
             this.hi_score = this.points;
-        }
-        if (this.hi_score > Game.hi_score) {
+        if (this.hi_score > Game.hi_score)
             Game.hi_score = this.hi_score;
-        }
         this.hearts -= 1;
-        // if hearts < 0 -> game over
         if (this.hearts < 0) {
             this.is_alive = false;
             Game.is_game_over = true;
             return;
         }
-        // or destroy snake
         this.destroy();
         this.position = new Position(0, 0);
         this.direction = Direction.NONE;
     }
     set_speed(speed) {
         this.speed = speed;
-        this.skip_next_turn = (speed === Speed.SLOW);
     }
     process_turn() {
-        var _a;
         if (!this.is_alive)
             return;
-        if (this.speed !== Speed.FAST && Game.clock.tick === ClockTick.ODD)
+        // SUPERFAST: doppio movimento per tick
+        if (this.speed === Speed.SUPERFAST) {
+            this.moveOne();
+            this.moveOne();
             return;
-        if (this.speed === Speed.SLOW && Game.clock.tick === ClockTick.EVEN) {
-            this.skip_next_turn = !this.skip_next_turn;
-            if (this.skip_next_turn)
-                return;
         }
+        // SLOW: muove solo su tick pari (ogni 2 tick)
+        if (this.speed === Speed.NORMAL && Game.clock.tick === ClockTick.ODD) {
+            return;
+        }
+        // FAST (base): muove sempre una volta per tick
+        this.moveOne();
+    }
+    moveOne() {
+        var _a;
         this.hit_detected = false;
-        let is_moving = true;
         const pos = Position.copy(this.position);
         switch (this.direction) {
             case Direction.UP:
@@ -95,38 +95,26 @@ export class Snake extends SnakeSegment {
             case Direction.RIGHT:
                 pos.x += 1;
                 break;
-            case Direction.NONE:
-                is_moving = false;
-                break;
-            default: is_moving = false;
+            case Direction.NONE: return;
         }
-        if (is_moving) {
-            // Wrapping (toroidale)
-            if (pos.x < 0) {
-                pos.x = Board.width - 1;
-                this.on_hit_screen_edge(ScreenEdge.WEST);
-            }
-            else if (pos.x >= Board.width) {
-                pos.x = 0;
-                this.on_hit_screen_edge(ScreenEdge.EAST);
-            }
-            if (pos.y < 0) {
-                pos.y = Board.height - 1;
-                this.on_hit_screen_edge(ScreenEdge.NORTH);
-            }
-            else if (pos.y >= Board.height) {
-                pos.y = 0;
-                this.on_hit_screen_edge(ScreenEdge.SOUTH);
-            }
-            if ((_a = Board.grid[pos.x]) === null || _a === void 0 ? void 0 : _a[pos.y]) {
-                const object = Board.grid[pos.x][pos.y];
-                object.handle_collision(this);
-            }
-        }
+        // wrapping
+        if (pos.x < 0)
+            pos.x = Board.width - 1;
+        else if (pos.x >= Board.width)
+            pos.x = 0;
+        if (pos.y < 0)
+            pos.y = Board.height - 1;
+        else if (pos.y >= Board.height)
+            pos.y = 0;
+        // collision
+        const obj = (_a = Board.grid[pos.x]) === null || _a === void 0 ? void 0 : _a[pos.y];
+        if (obj)
+            obj.handle_collision(this);
         if (!this.is_alive) {
             this.destroy();
+            return;
         }
-        else if (!this.hit_detected) {
+        if (!this.hit_detected) {
             this.update_board(pos);
         }
     }
@@ -146,9 +134,8 @@ export class Snake extends SnakeSegment {
     }
     destroy() {
         for (const segment of this.segments) {
-            if (segment && segment.position) {
+            if (segment.position)
                 Board.removeObjectAt(segment.position);
-            }
         }
         this.segments = [this];
         this.max_length = Snake.default_length;

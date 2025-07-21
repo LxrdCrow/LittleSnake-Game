@@ -20,9 +20,10 @@ export class Coin {
             return;
         const x = (this.position.x * Board.tileSize) + (Board.tileSize / 2);
         const y = (this.position.y * Board.tileSize) + (Board.tileSize / 2);
-        const r = (Board.tileSize / 2) - 1;
+        const r = Board.tileSize * 0.8 / 2;
         Canvas.context.beginPath();
         Canvas.context.arc(x, y, r, 0, 2 * Math.PI, false);
+        Canvas.context.lineWidth = 2;
         Canvas.context.strokeStyle = "#FFFF00";
         Canvas.context.fillStyle = "#CCCC00";
         Canvas.context.stroke();

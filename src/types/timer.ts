@@ -23,15 +23,12 @@ export class Timer {
     private on_elapsed = (): void => {
         if (this.is_paused) return;
 
-        // Alterna EVEN/ODD
         this.tick = (this.tick === ClockTick.EVEN)
             ? ClockTick.ODD
             : ClockTick.EVEN;
 
-        // Esegui handler
         this.handler();
 
-        // Ferma se è un timer singolo
         if (this.type === ClockType.TIMED) {
             this.stop();
         }
@@ -39,7 +36,7 @@ export class Timer {
 
     public start(): void {
         if (this.is_running) {
-            this.stop(); // Previene duplicazioni
+            this.stop(); 
         }
 
         this.is_running = true;

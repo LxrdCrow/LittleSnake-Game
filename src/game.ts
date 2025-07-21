@@ -1,5 +1,5 @@
 import { ClockTick, Timer, Direction } from './types/index.js';
-import { Coin, Snake, SlowPlayer, FastPlayer } from './objects/index.js';
+import { Coin, Snake, Obstacle } from './objects/index.js';
 import { Board, Canvas, Console, Controls, GUI } from './ux/index.js';
 
 enum GameDifficulty {
@@ -13,7 +13,7 @@ export class Game {
     static player: Snake;
     static hi_score: number = 0;
     static is_running: boolean = false;
-    static coinCounter: number = 0; // TODO: move to item randomizer class
+    static coinCounter: number = 0; 
 
     static init(): void {
         const canvas = document.querySelector("canvas") as HTMLCanvasElement;
@@ -22,7 +22,6 @@ export class Game {
         Canvas.init(canvas);
 
         const body = document.querySelector("body")!;
-        body.onkeyup = Controls.on_key_up;
         body.onkeydown = Controls.on_key_down;
 
 
@@ -41,7 +40,16 @@ export class Game {
         Game.player.direction = Direction.RIGHT;
 
         Game.clock = new Timer(GameDifficulty.DIFFICULT, 0, Game.on_clock_tick);
+
+        // Aggiungi gli ostacoli statici
+        const midY = Math.floor(Board.height / 2);
+        const numObstacles = 25;
+        for (let i = 0; i < numObstacles; i++) {
+            const obs = new Obstacle();
+            Board.placeAtRandom(obs);
+        }
     }
+
 
     static start(): void {
         if (Game.is_running) return;
@@ -116,14 +124,6 @@ export class Game {
                         if (Math.random() < 0.8) {
                             const coin = Coin.create_random();
                             Board.placeAtRandom(coin);
-                        } else {
-                            if (Math.random() < 0.5) {
-                                const slowPlayer = new SlowPlayer();
-                                Board.placeAtRandom(slowPlayer);
-                            } else {
-                                const fastPlayer = new FastPlayer();
-                                Board.placeAtRandom(fastPlayer);
-                            }
                         }
                     }
                 }

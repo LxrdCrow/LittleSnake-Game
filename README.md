@@ -12,11 +12,12 @@
 /src
     /object
         coin.ts
-        fastplayer.ts
+        bonusplayer.ts
         index.ts
-        slowplayer.ts
+        malusplayer.ts
         snake.ts
         snakesegments.ts
+        obstacle.ts
 
     /types
         enums.ts
@@ -32,6 +33,7 @@
         controls.ts
         gui.ts
         index.ts
+        levelmanager.ts
 
     game.ts
     index.ts
@@ -41,7 +43,7 @@
 
 ### Work in progress
 
-- Next task: modificare velocità snake, aggiungere ostacoli
+- Next task: Sistema a livelli -> Liv1 + struttura 
 
 - Logica di gioco:
 
@@ -61,20 +63,8 @@ Possibili patch:
 - Effetti Sonori
   - effetto sonoro tasti, effetto sonoro gioco, effetto sonoro cuore, effetto game over
 
-- Ostacoli
-   - blocchi muro rappresentati come linea nella griglia di gioco -> Se il serpente ha una vita sola è game over
-
-- Aumento della difficoltà
-    - Più si va avanti più è difficile
-
 - Vita unica con possibili vite extra
    - compaiono dopo un certo punteggio una vita exta (es. dopo 10.000 è un cuore in più) e deve essere raccolta entro 10 secondi
-
-- Aumentare velocità iniziale
-
-- Sistemare punteggio (moneta 1000 punti, oggetto random 500 punti)
-
-- Aumentare grandezza degli oggetti
 
 - Sistema bonus/malus
    - Bonus -> oggetto bonus per vite, super velocità 10 secondi, immortale per 10 secondi
@@ -83,8 +73,6 @@ Possibili patch:
 - Nemico:
    - Insegue il player per ucciderlo, è completamente invulnerabile, se lo tocca è immediato game over o vita in meno, non racoglie nessun oggetto
    - Di colore bianco (per distinguersi)
-
-- Eliminare monete blu e sostituire con ostacoli
 
 
 - Quando è invincibile usare questi colori:

@@ -37,9 +37,6 @@ export class Controls {
     }
 }
 Controls.last_key = null;
-Controls.on_key_up = (ev) => {
-    Controls.last_key = ev.key.toLowerCase();
-};
 Controls.on_key_down = (ev) => {
     //ignore input if user is typing in input/textarea
     if (ev.target.tagName === 'INPUT' || ev.target.tagName === 'TEXTAREA') {

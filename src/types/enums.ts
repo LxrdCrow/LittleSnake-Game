@@ -14,7 +14,7 @@ export enum Direction {
 }
 
 export enum Speed {
-    SLOW,
     NORMAL,
-    FAST
+    FAST,
+    SUPERFAST
 }

@@ -5,10 +5,6 @@ export class Controls {
 
 	static last_key: string | null = null;
 
-	static on_key_up = (ev: KeyboardEvent): void => {
-        Controls.last_key = ev.key.toLowerCase();
-    };
-
 	static on_key_down = (ev: KeyboardEvent): void => {
 		//ignore input if user is typing in input/textarea
 		if ((ev.target as HTMLElement).tagName === 'INPUT' || (ev.target as HTMLElement).tagName === 'TEXTAREA') {
