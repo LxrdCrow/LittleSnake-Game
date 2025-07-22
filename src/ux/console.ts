@@ -9,6 +9,13 @@ interface IButtons {
 export class Console {
     static buttons: IButtons;
 
+    static writeLine(text: string): void {
+        const consoleElement = document.getElementById("console");
+        if (consoleElement) {
+            consoleElement.innerText = text;
+        }
+    }
+
     static init(): void {
         const startBtn = document.querySelector("#start") as HTMLButtonElement;
         const pauseBtn = document.querySelector("#pause") as HTMLButtonElement;
@@ -17,6 +24,8 @@ export class Console {
         if (!startBtn || !pauseBtn || !resetBtn) {
             throw new Error("Uno o più pulsanti non trovati nel DOM.");
         }
+
+    
 
         Console.buttons = {
             start: startBtn,

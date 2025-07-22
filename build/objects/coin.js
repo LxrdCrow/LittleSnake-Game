@@ -37,7 +37,7 @@ export class Coin {
         Coin.coins_active--;
     }
 }
-Coin.values = [200, 400, 600, 800, 1000];
+Coin.values = [5000, 10000, 15000, 20000, 25000];
 Coin.instances = {};
 Coin.coins_index = 0;
 Coin.coins_active = 0;

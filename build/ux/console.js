@@ -1,5 +1,11 @@
 import { Game } from '../game.js';
 export class Console {
+    static writeLine(text) {
+        const consoleElement = document.getElementById("console");
+        if (consoleElement) {
+            consoleElement.innerText = text;
+        }
+    }
     static init() {
         const startBtn = document.querySelector("#start");
         const pauseBtn = document.querySelector("#pause");

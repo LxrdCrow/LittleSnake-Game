@@ -1,8 +1,8 @@
-import { Board } from "./board";
-import { Coin } from "../objects/coin";
-import { Obstacle } from "../objects/obstacle";
-import { BonusPlayer } from "../objects/bonusplayer";
-import { MalusPlayer } from "../objects/malusplayer";
+import { Board } from "./board.js";
+import { Coin } from "../objects/coin.js";
+import { Obstacle } from "../objects/obstacle.js";
+import { BonusPlayer } from "../objects/bonusplayer.js";
+import { MalusPlayer } from "../objects/malusplayer.js";
 
 
 
@@ -11,11 +11,6 @@ export class LevelManager {
   static onLevelUp(level: number) {
     switch (level) {
       case 1:
-        // Livello 1: solo ostacoli extra
-        for (let i = 0; i < 5; i++) {
-          const o = new Obstacle();
-          Board.placeAtRandom(o);
-        }
         break;
 
       case 2:
@@ -56,13 +51,15 @@ export class LevelManager {
         // Esempio malus: spawn 2 MalusPlayer
         for (let i = 0; i < 2; i++) {
           const randomPosition = Board.generateRandomPosition();
-          const m = new MalusPlayer(randomPosition);
-          Board.placeAtRandom(m);
+          if (randomPosition !== null) {
+            const m = new MalusPlayer(randomPosition);
+            Board.placeAtRandom(m);
+          }
         }
         break;
 
       default:
-        console.log('Hai vinto il gioco!');
+        console.warn(`LevelManager: level ${level} not implemented`);
     }
   }
 }

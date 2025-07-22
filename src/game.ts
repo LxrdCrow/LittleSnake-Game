@@ -1,6 +1,7 @@
 import { ClockTick, Timer, Direction } from './types/index.js';
 import { Coin, Snake, Obstacle } from './objects/index.js';
 import { Board, Canvas, Console, Controls, GUI } from './ux/index.js';
+import { LevelManager } from './ux/levelmanager.js';
 
 enum GameDifficulty {
     EASY = 300,
@@ -9,6 +10,7 @@ enum GameDifficulty {
 }
 
 export class Game {
+    static level: number = 1;
     static clock: Timer;
     static player: Snake;
     static hi_score: number = 0;
@@ -52,6 +54,11 @@ export class Game {
 
 
     static start(): void {
+        // Se sono in Game Over => ignoro il tasto Start
+        if (Game.is_game_over) {
+            return;
+        }
+
         if (Game.is_running) return;
         if (Game.clock.is_paused) {
             return Game.pause();
@@ -59,7 +66,11 @@ export class Game {
 
         Game.is_running = true;
         Game.clock.start();
+
+        GUI.showLevel(Game.level);
+        Console.writeLine(`Level ${Game.level}`);
     }
+
 
     static pause(): void {
         if (Game.clock.is_paused) {
@@ -78,10 +89,14 @@ export class Game {
         Game.is_running = false;
         Game.is_game_over = false; 
         Game.coinCounter = 0;
+        Game.level = 1;
 
         // reset objects
         Coin.instances = {};
         Coin.coins_active = 0;
+
+        Console.writeLine("Start Level ${Game.level}");
+        GUI.showLevel(Game.level);
         Game.ready();
     }
     static is_game_over: boolean = false;
@@ -91,6 +106,44 @@ export class Game {
         Game.reset();
     }
 
+    static checkLevelUP(): void {
+        const thresholds = [25000, 50000, 75000, 100000];
+
+        // Se ho già completato il livello 4, non faccio nulla (o mostro “You win!”)
+        if (Game.level > thresholds.length) {
+            return;
+        }
+
+        // Soglia del livello in corso è thresholds[Game.level - 1]
+        const target = thresholds[Game.level - 1];
+
+        if (Game.player.points >= target) {
+            // Messaggio di completamento
+            Console.writeLine(`Level ${Game.level} completed!`);
+
+            // Se era l’ultimo livello (4), vinci e blocchi il gioco
+            if (Game.level === thresholds.length) {
+                Console.writeLine(`🏆 You win the game!`);
+                Game.is_running = false;
+                Game.is_game_over = true;
+                Game.clock.stop();
+                return;
+            }
+
+            // Altrimenti, passo al livello successivo
+            Game.level++;
+            LevelManager.onLevelUp(Game.level);
+
+            // Notifica start nuovo livello
+            Console.writeLine(`Level ${Game.level}`);
+            GUI.showLevel(Game.level);
+        }
+    }
+
+
+
+        
+
     static on_clock_tick(): void {
         if (Game.is_game_over) {
             return;
@@ -98,6 +151,7 @@ export class Game {
 
         Controls.process_input();
         Game.player.process_turn();
+        Game.checkLevelUP();
 
         if (Game.player.hearts < 0) {
             Game.is_game_over = true;
@@ -105,6 +159,7 @@ export class Game {
             Game.clock.stop();
 
             Board.draw();
+            GUI.draw();
             return;
         }
 

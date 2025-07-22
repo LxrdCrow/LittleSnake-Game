@@ -43,7 +43,7 @@
 
 ### Work in progress
 
-- Next task: Sistema a livelli -> Liv1 + struttura 
+- Next task: Implementare nemici e bonus/malus da correggere (i bonus appaiono già al secondo livello, i malus solo all'ultimo livello)
 
 - Logica di gioco:
 
@@ -62,9 +62,6 @@ Possibili patch:
 
 - Effetti Sonori
   - effetto sonoro tasti, effetto sonoro gioco, effetto sonoro cuore, effetto game over
-
-- Vita unica con possibili vite extra
-   - compaiono dopo un certo punteggio una vita exta (es. dopo 10.000 è un cuore in più) e deve essere raccolta entro 10 secondi
 
 - Sistema bonus/malus
    - Bonus -> oggetto bonus per vite, super velocità 10 secondi, immortale per 10 secondi

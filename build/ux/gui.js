@@ -4,7 +4,12 @@ export class GUI {
         GUI.header = document.querySelector("header");
         GUI.hearts = document.querySelector("#player-lives");
         GUI.score = document.querySelector("#player-score");
-        GUI.build = document.querySelector("#build");
+    }
+    static showLevel(level) {
+        const consoleElement = document.getElementById("console");
+        if (consoleElement) {
+            consoleElement.innerText = `Level ${level}`;
+        }
     }
     static draw() {
         if (Game.is_game_over) {

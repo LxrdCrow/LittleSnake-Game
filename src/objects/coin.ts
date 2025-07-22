@@ -4,14 +4,14 @@ import { Snake } from './snake.js'
 
 export class Coin implements IGameObject {
 
-	public static values: number[] = [200, 400, 600, 800, 1000]
+	public static values: number[] = [5000, 10000, 15000, 20000, 25000]
 	public static instances: { [index: number]: Coin } = {}
 	public static coins_index: number = 0
 	public static coins_active: number = 0
 
 	public index: number
 	public value: number
-	public position: Position
+	public position!: Position
 
 	constructor(value: number) {
 		this.value = value

@@ -4,13 +4,18 @@ export abstract class GUI {
     static header: HTMLElement;
     static hearts: HTMLElement;
     static score: HTMLElement;
-    static build: HTMLElement;
 
     static init(): void {
         GUI.header = document.querySelector("header")!;
         GUI.hearts = document.querySelector("#player-lives")!;
         GUI.score  = document.querySelector("#player-score")!;
-        GUI.build  = document.querySelector("#build")!;
+    }
+
+    static showLevel(level: number): void {
+        const consoleElement = document.getElementById("console");
+        if (consoleElement) {
+            consoleElement.innerText = `Level ${level}`;
+        }
     }
 
     static draw(): void {
@@ -29,3 +34,4 @@ export abstract class GUI {
             : `Hi Score: ${Game.hi_score}`;
     }
 }
+

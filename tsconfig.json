@@ -2,8 +2,12 @@
   "compilerOptions": {
     "target": "es6",
     "module": "es6",
-    "outDir": "build",
-    "rootDir": "src"
+    "moduleResolution": "node",
+    "rootDir": "src",       
+    "outDir": "build",      
+    "strict": true,
+    "esModuleInterop": true
   },
-  "include": ["src"]
+  "include": ["src/**/*"]
 }
+
